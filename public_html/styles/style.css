@@ -1,7 +1,8 @@
 html{
 	background-color: black; 
 	background-image: url("../images/4.png");
-
+	overflow-y: hidden; 
+	overflow-x: hidden;
 }
 body{
 	color : white;
