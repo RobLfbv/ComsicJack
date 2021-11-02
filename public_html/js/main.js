@@ -7,16 +7,16 @@ var game;
 var PLAYER_HEIGHT = 69;
 var PLAYER_WIDTH = 34;
 
-const OBSTACLE_HEIGHT = 89;
-const OBSTACLE_WIDTH = 62;
+const OBSTACLE_HEIGHT = 90;
+const OBSTACLE_WIDTH = 68;
 
-const OBSTACLE_HEIGHTVOL = 18;
-const OBSTACLE_WIDTHVOL = 52;
+const OBSTACLE_HEIGHTVOL = 16;
+const OBSTACLE_WIDTHVOL = 31;
 
 const GROUND_HEIGHT = 265;
 const GROUND_WIDTH = 680;
 
-const JUMP_HEIGHT = 180;
+const JUMP_HEIGHT = 250;
 var player_fall = 5;
 var degre = 0;
 
@@ -34,12 +34,12 @@ var etat = 0;
 
 var spritesObstaclesSol = new Image();
 spritesObstaclesSol.onload = animate;
-spritesObstaclesSol.src = "./images/Tentacules2.png";
+spritesObstaclesSol.src = "./images/Tentacules3.png";
 var stepSol = 0;
 
 var spritesObstaclesVol = new Image();
 spritesObstaclesVol.onload = animate;
-spritesObstaclesVol.src = "./images/Asteroid.png";
+spritesObstaclesVol.src = "./images/Asteroid2.png";
 var stepVol = 0;
 
 
@@ -48,7 +48,7 @@ spritesSol.src = "./images/Ground1.png";
 
 var spriteCiel = new Image();
 spriteCiel.onload = animate;
-spriteCiel.src = "./images/Sky.png";
+spriteCiel.src = "./images/Sky220.png";
 var stepCiel = 0;
 
 
@@ -60,9 +60,10 @@ function draw(tabSol, tabVol) {
 	var context = canvas.getContext('2d');
 	context.imageSmoothingEnabled = false;
     //Terrain
-    //drawSky(0,0,stepCiel);
     context.fillStyle = 'black';
     context.fillRect(0, 0, canvas.width, canvas.height);
+    drawSky(0,0,Math.floor(stepCiel));
+    
     drawSol(game.ground1.x,game.ground1.y);
     drawSol(game.ground2.x,game.ground2.y);
     //Joueur
@@ -95,13 +96,13 @@ function drawPerso(x,y,step){
 function drawObstacleSol(x,y,stepSol){
 	var context = canvas.getContext('2d');
 	context.imageSmoothingEnabled = false;
-	context.drawImage(spritesObstaclesSol,62*stepSol,0,62,89,x,y,62,89);
+	context.drawImage(spritesObstaclesSol,76*stepSol,0,76,94,x,y,76,94);
 }
 
 function drawObstacleVol(x,y,stepVol){
 	var context = canvas.getContext('2d');
 	context.imageSmoothingEnabled = false;
-	context.drawImage(spritesObstaclesVol,46*stepVol,0,46,18,x,y,46,18);
+	context.drawImage(spritesObstaclesVol,31*stepVol,0,31,16,x,y,31,16);
 }
 
 function drawSol(x,y){
@@ -113,7 +114,7 @@ function drawSol(x,y){
 function drawSky(x,y,stepCiel){
 	var context = canvas.getContext('2d');
 	context.imageSmoothingEnabled = false;
-	context.drawImage(spriteCiel,500*stepCiel,0,500,500,x,y,500,500);
+	context.drawImage(spriteCiel,680*stepCiel,0,680,250,x,y,680,250);
 }
 
 function update(){
@@ -132,8 +133,8 @@ if(etat == 2){
 	if(step>=2){step -=2;}
 }
 stepSol += 0.05;
-if(stepSol>=2){stepSol -= 2;}
-stepCiel +=0.01;
+if(stepSol>=4){stepSol -= 4;}
+stepCiel +=0.04;
 if(stepCiel>=2){stepCiel -= 2;}
 stepVol +=0.05;
 if(stepVol>=2){stepVol -= 2;}
@@ -189,7 +190,8 @@ function little(e){
 
 function detectJump(e){
 	if(drapeaubis == 0 && (e.keyCode == 32 || e.keyCode == 38)){
-		degre += 90;
+		degre = 150;
+		degre += 50;
 		verif1 = 1;
 		document.addEventListener('keyup', e => {
 			verif2 = 1;
@@ -329,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function () {
         	}
         },
         obstacleVol3: {
-        	x: canvas.width-OBSTACLE_WIDTH+1100,
+        	x: canvas.width-OBSTACLE_WIDTH+1300,
         	y: canvas.height/1.5-OBSTACLE_HEIGHT - 100,
         	speed: {
         		x: 4
