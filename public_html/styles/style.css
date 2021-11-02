@@ -1,0 +1,14 @@
+html{
+	background-color: black; 
+	background-image: url("../images/4.png");
+
+}
+body{
+	color : white;
+	display:flex;
+	flex-direction: column;
+	text-align: center;
+	padding-left: auto;
+	padding-right: auto;
+
+}
