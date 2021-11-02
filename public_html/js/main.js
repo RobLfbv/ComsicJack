@@ -23,6 +23,9 @@ var drapeaubis = 0;
 var verif1 = 0;
 var verif2 = 0;
 var isLittle = 0;
+var test = 0;
+var playSound = 0;
+var timer;
 
 var pathPersoRun = "./images/CJ_Running.png";
 var pathPersoJet = "./images/CJ_Jet.png";
@@ -35,16 +38,26 @@ var pathPlanete1 = "./images/Planete1.png";
 var pathPlanete2 = "./images/Planete2.png";
 var pathStart = "./images/Start.png";
 var pathRestart = "./images/Restart.png";
-var pathGinked = "./images/Ginked.png";
+var pathGinked = "./images/Ginked2.png";
 var pathBlack = "./images/death_black.png";
 var pathMute = "./images/Mute.png";
 var pathUnmute = "./images/Unmute.png";
 var pathSave = "./images/Save.png";
 var pathText = "./images/Textfield.png";
+var pathTuto = "./images/Commandes.png";
+var pathDisclaimer = "./images/Disclaimer.png";
+var pathCreditsB = "./images/Credits_bouton.png";
+var pathCredits = "./images/Credits.png";
+var pathCroix = "./images/croix.png";
+
+
 var pathJson = "./score/score.json";
 var pathPhp = "score.php";
+
+
 var pathMusic = "./sounds/CJ_Song.mp3";
 var pathGameOver = "./sounds/Game Over.mp3";
+var pathSparkle = "./sounds/sparkle.mp3";
 
 
 var sprites = new Image();
@@ -102,13 +115,29 @@ spriteMute.src = pathMute;
 var spriteUnmute = new Image();
 spriteUnmute.src = pathUnmute;
 
-var spriteSend= new Image();
+var spriteSend = new Image();
 spriteSend.src = pathSave;
 
-var spriteTextField= new Image();
+var spriteTextField = new Image();
 spriteTextField.src = pathText;
 
+var spriteTuto = new Image();
+spriteTuto.src = pathTuto;
+
+var spriteDisclaimer = new Image();
+spriteDisclaimer.src = pathDisclaimer;
+
+var spriteCredits = new Image();
+spriteCredits.src = pathCredits;
+
+var spriteCreditsB = new Image();
+spriteCreditsB.src = pathCreditsB;
+
+var spriteCroix = new Image();
+spriteCroix.src = pathCroix;
+
 var start = 0;
+var credits = 0;
 
 var scoreText="";
 var pseudo ="";
@@ -116,6 +145,7 @@ var pseudo ="";
 var muted = false;
 var myMusic; 
 var gameOverSound;
+var sparkle;
 var scoreSended = false;
 /* Version 2 Code Here */
 // ol element containing high scores
@@ -187,7 +217,7 @@ function displayScores(){
 	var context = canvas.getContext('2d');
 	context.font = "15px Arial";
     context.fillStyle = 'white';
-	var stk = new Array(5);
+	var stk = new Array(10);
 	var idx = 0;
 	for(let i = 0; i<scoreText.length;i++){
 		if(scoreText.charAt(i)=='\n'){
@@ -195,11 +225,16 @@ function displayScores(){
 			idx++;
 		}
 	}
-	context.fillText(scoreText.substring(0,stk[0]), 500, 210);
-	context.fillText(scoreText.substring(stk[0]+1,stk[1]), 500, 240);
-	context.fillText(scoreText.substring(stk[1]+1,stk[2]), 500, 270);
-	context.fillText(scoreText.substring(stk[2]+1,stk[3]), 500, 300);
-	context.fillText(scoreText.substring(stk[3]+1,stk[4]), 500, 330);
+	context.fillText(scoreText.substring(0,stk[0]), 540, 180);
+	context.fillText(scoreText.substring(stk[0]+1,stk[1]), 540, 210);
+	context.fillText(scoreText.substring(stk[1]+1,stk[2]), 540, 240);
+	context.fillText(scoreText.substring(stk[2]+1,stk[3]), 540, 270);
+	context.fillText(scoreText.substring(stk[3]+1,stk[4]), 540, 300);
+	context.fillText(scoreText.substring(stk[4]+1,stk[5]), 540, 330);
+	context.fillText(scoreText.substring(stk[5]+1,stk[6]), 540, 360);
+	context.fillText(scoreText.substring(stk[6]+1,stk[7]), 540, 390);
+	context.fillText(scoreText.substring(stk[7]+1,stk[8]), 540, 420);
+	context.fillText(scoreText.substring(stk[8]+1,stk[9]), 540, 450);
 }
 
 
@@ -221,6 +256,7 @@ function init(tabSol,tabVol){
 	vivant = 1;
 	score = 0;
 	start = 0;
+	credits = 0;
 	scoreSended = false;
 	sprites.src = pathPersoRun;
 	game.player.y = canvas.height / 1.5 - PLAYER_HEIGHT + 10;
@@ -283,13 +319,15 @@ function draw(tabSol, tabVol) {
     //Joueur
     drawPerso(20,game.player.y, Math.floor(step));
     drawBar(degre);
-
+    if(isMobile()){
+    	drawBlack();
+    	drawDisclaimer();
+    }else{
     //Obstacle
     if(start!=0){
     	for(var i = 0; i<tabSol.length; i++){
     		drawObstacleSol(tabSol[i].x,tabSol[i].y,Math.floor(stepSol));
     		drawObstacleVol(tabVol[i].x,tabVol[i].y,Math.floor(stepVol));
-
     	}
     }
     context.font = "30px Arial";
@@ -297,18 +335,25 @@ function draw(tabSol, tabVol) {
     context.fillText(score, 600, 30);
     if(start == 0){
     	drawStart();
-   		if(muted){
-			drawUnmute();
+    	drawTuto();
+    	drawCreditsB();
+    	if(muted){
+    		drawUnmute();
     	}else{
-			drawMute();
+    		drawMute();
+    	}
+    	if(credits == 1){
+    		drawBlack();
+    		drawCredits();
+    		drawCroix();
     	}
     }else if(start == 1 && vivant == 0){
     	drawBlack();
-
+    	drawTuto()
     	if(muted){
-			drawUnmute();
+    		drawUnmute();
     	}else{
-			drawMute();
+    		drawMute();
     	}
     	drawSend();
     	drawRetry();
@@ -316,8 +361,15 @@ function draw(tabSol, tabVol) {
     	displayScores();
     	context.font = "30px Arial";
     	drawTextField();
+    	drawCreditsB();
     	context.fillText(pseudo, 290, 340);
+    	if(credits == 1){
+    		drawBlack();
+    		drawCredits();
+    		drawCroix();
+    	}
     }
+}
 }
 function drawPerso(x,y,step){
 	var context = canvas.getContext('2d');
@@ -369,11 +421,11 @@ function drawStart(){
 }
 function drawGinked(){
 	var context = canvas.getContext('2d');
-	context.drawImage(spriteGinked,200,123,273,67);
+	context.drawImage(spriteGinked,140,90,406,67);
 }
 function drawRetry(){
 	var context = canvas.getContext('2d');
-	context.drawImage(spriteRetry,0,0,777,769,280,193,100,100);
+	context.drawImage(spriteRetry,0,0,777,769,300,193,75,75);
 }
 
 function drawBlack(){
@@ -409,6 +461,32 @@ function drawPlanete(){
 		context.drawImage(spritesPlanete2,0,0,207,159,xP,yP,207,159);
 	}
 }
+
+function drawTuto(){
+	var context = canvas.getContext('2d');
+	context.drawImage(spriteTuto,0,0,260,200,200,350,260,200);
+}
+
+function drawDisclaimer(){
+	var context = canvas.getContext('2d');
+	context.drawImage(spriteDisclaimer,0,0,680,520,0,0,680,520);
+}
+
+function drawCreditsB(){
+	var context = canvas.getContext('2d');
+	context.drawImage(spriteCreditsB,0,0,112,56,580,480,100,40);
+}
+
+function drawCredits(){
+	var context = canvas.getContext('2d');
+	context.drawImage(spriteCredits,0,0,680,520,0,0,680,520);
+}
+
+function drawCroix(){
+	var context = canvas.getContext('2d');
+	context.drawImage(spriteCroix,0,0,56,56,624,0,56,56);
+}
+
 
 function update(){
 	if(etat == 0){
@@ -493,7 +571,7 @@ function death(tabSol, tabVol){
 }
 
 function little(e){
-	if(e.keyCode == 40 && vivant == 1){
+	if((e.keyCode == 40) && vivant == 1){
 		if(game.player.y>=canvas.height/1.5 - 69){
 			PLAYER_HEIGHT = 48;
 			game.player.y = canvas.height / 1.5 - PLAYER_HEIGHT + 10;
@@ -517,15 +595,15 @@ function little(e){
 				player_fall = 5;
 				isLittle = 0;
 			}
-
 		});	
 	}
 }
 
 function detectJump(e){
+
 	if(drapeaubis == 0 && (e.keyCode == 32 || e.keyCode == 38) && vivant == 1){
-		degre += 15;
-		verif1 = 1;
+			degre += 15;
+			verif1 = 1;
 		document.addEventListener('keyup', e => {
 			if(vivant == 1){
 				verif2 = 1;
@@ -578,10 +656,17 @@ function jump(){
     	drapeaubis = 0;
     	degre = 0;
     	verif2 = 0;
+    	test = 0;
     }
 }
+/*
+context.drawImage(spriteSautB,0,0,50,50,110,450,50,50);	
+context.drawImage(spritePetitB,0,0,50,50,160,450,50,50);
+context.drawImage(spritePlannerB,0,0,50,50,600,450,50,50);
+*/
 
 function movement(){
+	var rect = canvas.getBoundingClientRect();
 	if(vivant == 1){
 		onkeydown = function(e){
 			little(e);
@@ -655,6 +740,9 @@ function play(){
 					tabVol[a].speed.x = 7;
 				}
 			}
+			if(score%1000==0 && score!=0){
+				sparkle.play();
+			}
 			game.ground1.x -= game.obstacle1.speed.x;
 			game.ground2.x -= game.obstacle1.speed.x;
 			movement();
@@ -673,7 +761,7 @@ function play(){
 	}
 	requestAnimationFrame(play);
 }
-
+//	context.drawImage(spriteCreditsB,0,0,112,56,580,480,100,40);
 function menu(tabSol,tabVol){
 	var rect = canvas.getBoundingClientRect();
 	mute();
@@ -690,7 +778,20 @@ function menu(tabSol,tabVol){
 				if(!muted){
 					myMusic.play();
 				}
+		}	if(580<=posX && 
+				580+100>=posX &&
+				480<=posY &&
+				480+40>=posY){
+				credits = 1;
 		}
+			if(624<=posX && 
+				624+56>=posX &&
+				0<=posY &&
+				0+56>=posY){
+				if(credits == 1){
+					credits = 0;
+				}
+			}
 	}
 });
 	onkeydown = function(e){
@@ -707,7 +808,7 @@ function menu(tabSol,tabVol){
 		}
 	}
 }
-
+//context.drawImage(spriteCroix,0,0,56,56,624,0,56,56);
 function deathMenu(tabSol,tabVol){
 	var rect = canvas.getBoundingClientRect();
 	mute();
@@ -730,13 +831,26 @@ function deathMenu(tabSol,tabVol){
 				305+50 >= posY &&
 				365<= posX &&
 				365+50 >= posX){
-				console.log("oui");
 					if(!scoreSended){
 						if(pseudo.length==3){
 							inJson();
 							scoreSended = true;
 						}
 					}
+			}
+			if(580<=posX && 
+				580+100>=posX &&
+				480<=posY &&
+				480+40>=posY){
+				credits = 1;
+			}
+			if(624<=posX && 
+				624+56>=posX &&
+				0<=posY &&
+				0+56>=posY){
+				if(credits == 1){
+					credits = 0;
+				}
 			}
 
 	}
@@ -750,11 +864,11 @@ function deathMenu(tabSol,tabVol){
 			}
 		}
 		if(e.keyCode == 13 && vivant == 0){
-			document.addEventListener('keyup', e => {
-				if(vivant == 0){
-					init(tabSol,tabVol);
-				}
-			});
+			init(tabSol,tabVol);
+			start = 1;
+			if(!muted){
+				myMusic.play();
+			}
 		}
 	}
 }
@@ -771,7 +885,6 @@ function mute(){
 				0+50 >= posX && !muted){
 				if(!muted){
 					muted = true;
-					console.log("Muted");
 				}
 			}else if( 0 <= posY && 
 				0+50 >= posY &&
@@ -779,17 +892,21 @@ function mute(){
 				50+50 >= posX && muted){
 				if(muted){
 					muted = false;
-					console.log("Unmuted");
 				}
 			}
 		}
 	});
 }
 
+function isMobile() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
 	myMusic = new sound(pathMusic);
 	myMusic.sound.loop = true;
 	gameOverSound = new sound(pathGameOver);
+	sparkle = new sound(pathSparkle);
 	canvas = document.getElementById('canvas');
 	game ={
         //variables concernant le joueur

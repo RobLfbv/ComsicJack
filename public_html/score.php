@@ -6,7 +6,7 @@
  $highscore_array = json_decode($highscoreJSON, true);
  $key = 0;
  $highscores = array();
- if ($player_score > $highscore_array[4][score]) {
+ if ($player_score > $highscore_array[9][score]) {
  	 foreach($highscore_array as $k => $value) {
  	 	 $score = $value[score];
  	 	 if ($score >= $player_score) {
@@ -16,7 +16,7 @@
  	 	 	 // Beat the score
  	 	 	 $key = $k;
  	 	 	 $highscores[$k] = $player_array;
- 	 	 	 for ($i = $key; $i < 4; $i++) {
+ 	 	 	 for ($i = $key; $i < 9; $i++) {
  	 	 	 	 $highscores[$i + 1] = $highscore_array[$i];
  	 	 	 }
  	 	 break;
