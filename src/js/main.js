@@ -20,6 +20,7 @@ var drapeau = 0;
 var drapeaubis = 0;
 var verif1 = 0;
 var verif2 = 0;
+var isLittle = 0;
 
 var sprites = new Image();
 sprites.onload = animate;
@@ -64,6 +65,9 @@ function drawPerso(x,y,step){
         context.drawImage(sprites,34*step,0,34,72,x,y,34,72);
     }else if(etat == 1){
         context.drawImage(sprites,29*step,0,29,63,x,y,29,63);
+        
+    }else if(etat == 2){
+    	context.drawImage(sprites,27*step,0,27,48,x,y,27,48);
     }
 }
 
@@ -88,6 +92,11 @@ function update(){
         step += 0.01;
         if(step >= 2){step -=2}
     }
+	
+	if(etat == 2){
+		step +=0.05;
+		if(step>=2){step -=2}
+	}
 	stepSol += 0.1;
 	if(stepSol>=2){stepSol -= 2;}
 }
@@ -122,23 +131,28 @@ function play(){
         death();
 
         onkeydown = function(e){
-
-           if(e.keyCode == 40){
-
-              if(drapeaubis == 1){
-                 player_fall = 10;
-             }
-             PLAYER_HEIGHT = 15;
-
-             document.addEventListener('keyup', e => {
-                console.log("bonk");
-                player_fall = 5;
-                PLAYER_HEIGHT = 30;
-            });
+        if(e.keyCode == 40){
+			if(game.player.y>=canvas.height/1.5 - 69){
+				PLAYER_HEIGHT = 48;
+				game.player.y = canvas.height / 1.5 - PLAYER_HEIGHT;
+				sprites.src = "./src/sprites/CJ_Little.png";
+				etat = 2;
+			}
+			isLittle = 1;
+			player_fall = 15;
+        	
+           	document.addEventListener('keyup', e => {
+           		PLAYER_HEIGHT = 69;
+				game.player.y = canvas.height / 1.5 - PLAYER_HEIGHT;
+           		sprites.src = "./src/sprites/CJ_Running.png";
+           		etat = 0;
+           		player_fall = 5;
+           		isLittle = 0;
+       		});	
          }
 
          if(drapeaubis == 0 && e.keyCode == 32){
-          degre += 60;
+          degre += 90;
           verif1 = 1;
           document.addEventListener('keyup', e => {
            verif2 = 1;
@@ -171,8 +185,17 @@ function play(){
     	game.player.y += player_fall;//descendre
     }
     if(drapeaubis == 1 && drapeau == 0 && game.player.y>=canvas.height / 1.5 - PLAYER_HEIGHT){
-        sprites.src = "./src/sprites/CJ_Running.png";
-        etat = 0;
+    	if(isLittle == 1){
+			PLAYER_HEIGHT = 48;
+    		game.player.y = canvas.height / 1.5 - PLAYER_HEIGHT;
+			sprites.src = "./src/sprites/CJ_Little.png";
+			step = 0;
+			etat = 2;
+
+    	}else{
+    		sprites.src = "./src/sprites/CJ_Running.png";
+			etat = 0;
+    	}
         drapeaubis = 0;
         degre = 0;
         verif2 = 0;
