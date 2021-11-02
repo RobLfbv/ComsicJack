@@ -24,22 +24,22 @@ var isLittle = 0;
 
 var sprites = new Image();
 sprites.onload = animate;
-sprites.src = "./src/sprites/CJ_Running.png";
+sprites.src = "./images/CJ_Running.png";
 var step = 0;
 var etat = 0;
 
 var spritesObstaclesSol = new Image();
 spritesObstaclesSol.onload = animate;
-spritesObstaclesSol.src = "./src/sprites/Tentacules2.png";
+spritesObstaclesSol.src = "./images/Tentacules2.png";
 var stepSol = 0;
 var etatSol = 0;
 
 var spritesSol = new Image();
-spritesSol.src = "./src/sprites/Ground1.png";
+spritesSol.src = "./images/Ground1.png";
 
 var vivant = 1;
 
-
+var score = 0;
 
 function draw() {
     var context = canvas.getContext('2d');
@@ -57,6 +57,8 @@ function draw() {
 
     //Obstacle
     drawObstacleSol(game.obstacle.x,game.obstacle.y,Math.floor(stepSol));
+	context.font = "30px Arial";
+	context.fillText("Hello World", 250, 250);
  }
 function drawPerso(x,y,step){
     var context = canvas.getContext('2d');
@@ -97,7 +99,7 @@ function update(){
 		step +=0.05;
 		if(step>=2){step -=2}
 	}
-	stepSol += 0.1;
+	stepSol += 0.05;
 	if(stepSol>=2){stepSol -= 2;}
 }
 
@@ -134,8 +136,8 @@ function play(){
         if(e.keyCode == 40){
 			if(game.player.y>=canvas.height/1.5 - 69){
 				PLAYER_HEIGHT = 48;
-				game.player.y = canvas.height / 1.5 - PLAYER_HEIGHT;
-				sprites.src = "./src/sprites/CJ_Little.png";
+				game.player.y = canvas.height / 1.5 - PLAYER_HEIGHT + 10;
+				sprites.src = "./images/CJ_Little.png";
 				etat = 2;
 			}
 			isLittle = 1;
@@ -143,15 +145,17 @@ function play(){
         	
            	document.addEventListener('keyup', e => {
            		PLAYER_HEIGHT = 69;
-				game.player.y = canvas.height / 1.5 - PLAYER_HEIGHT;
-           		sprites.src = "./src/sprites/CJ_Running.png";
+           		if(game.player.y>=canvas.height/1.5 - 69){
+           			game.player.y = canvas.height / 1.5 - PLAYER_HEIGHT + 10;	
+           		}
+           		sprites.src = "./images/CJ_Running.png";
            		etat = 0;
            		player_fall = 5;
            		isLittle = 0;
        		});	
          }
 
-         if(drapeaubis == 0 && e.keyCode == 32){
+         if(drapeaubis == 0 && (e.keyCode == 32 || e.keyCode == 38)){
           degre += 90;
           verif1 = 1;
           document.addEventListener('keyup', e => {
@@ -163,7 +167,7 @@ function play(){
   if(verif1 == 1 && verif2 == 1){
    etat = 1;
    drapeau = 1;
-   sprites.src = "./src/sprites/CJ_Jet.png";
+   sprites.src = "./images/CJ_Jet.png";
    verif1 = 0;
 }
     //On impose une limite de saut
@@ -172,28 +176,28 @@ function play(){
     }
 
     //On fait sauter le joueur si le joueur à relacher le saut et si Jack est en dessous de la hauteur de saut
-    if(drapeau == 1 && game.player.y>= canvas.height / 1.5 - PLAYER_HEIGHT - degre){
+    if(drapeau == 1 && game.player.y>= canvas.height / 1.5 - PLAYER_HEIGHT + 10 - degre){
     	game.player.y -= 10;//monter
     }
 
     //Si le personnage est inférieur 
-    if(drapeau == 1 && game.player.y < canvas.height / 1.5 - PLAYER_HEIGHT - degre){
+    if(drapeau == 1 && game.player.y < canvas.height / 1.5 - PLAYER_HEIGHT + 10 - degre){
     	drapeau = 0;
     }
     //On le fait tomber
-    if(drapeau == 0 && game.player.y<canvas.height / 1.5 - PLAYER_HEIGHT){
+    if(drapeau == 0 && game.player.y<canvas.height / 1.5 - PLAYER_HEIGHT + 10){
     	game.player.y += player_fall;//descendre
     }
-    if(drapeaubis == 1 && drapeau == 0 && game.player.y>=canvas.height / 1.5 - PLAYER_HEIGHT){
+    if(drapeaubis == 1 && drapeau == 0 && game.player.y>=canvas.height / 1.5 - PLAYER_HEIGHT + 10){
     	if(isLittle == 1){
 			PLAYER_HEIGHT = 48;
-    		game.player.y = canvas.height / 1.5 - PLAYER_HEIGHT;
-			sprites.src = "./src/sprites/CJ_Little.png";
+    		game.player.y = canvas.height / 1.5 - PLAYER_HEIGHT + 10;
+			sprites.src = "./images/CJ_Little.png";
 			step = 0;
 			etat = 2;
 
     	}else{
-    		sprites.src = "./src/sprites/CJ_Running.png";
+    		sprites.src = "./images/CJ_Running.png";
 			etat = 0;
     	}
         drapeaubis = 0;
@@ -209,12 +213,12 @@ document.addEventListener('DOMContentLoaded', function () {
     game ={
         //variables concernant le joueur
         player:{
-            y: canvas.height / 1.5 - PLAYER_HEIGHT
+            y: canvas.height / 1.5 - PLAYER_HEIGHT + 10
         },
         //variables concernant les obstacles
         obstacle: {
             x: canvas.width-OBSTACLE_WIDTH,
-            y: canvas.height/1.5-OBSTACLE_HEIGHT,
+            y: canvas.height/1.5-OBSTACLE_HEIGHT + 10,
                 speed: {
                     x: 5
                 }
